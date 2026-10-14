@@ -306,3 +306,17 @@ What was lacking: `harness.md` still read like a changelog in places ("Added in 
 > Yo, now finally, problem number 11. We need to submit it to GitHub, the title is submit to GitHub. We're going to be pushing our code to a public GitHub repository. So our graders can clone it. We'll be then submitting the URL in a in Canvas and put the URL in the output slash GitHub underscore URL dot txt file. Of course, don't push to the GitHub our real .env Um, do include both database files under data slash um, I'll just tell you how the file should be layout and the readme should explain um, both the should explain copy original DB to the working copy when you need a clear clean run start MCP server start a fast API backend start the react board reset the DB before a full three ticket run.. The title is Submit to GitHub. We're going to be pushing our code to a public GitHub repository so our graders can clone it. We'll be then submitting the URL in a in the canvas and put the URL in the output slash github underscore URL dot txt file. Of course, don't push to the github our real dot env. Um, do include both database files under data slash. Um, I'll just tell you how the file should be laid out. And the README should explain um, both the cop should explain copy original DB to the working copy when you need a clear clean run, start MCP server, start the fast API backend, start the React board, reset the DB before a full three ticket run.
 >
 > (Attached: a screenshot of the expected file layout: hw5/ with AI_prompts.md, requirements.txt, .env.example, .gitignore, .mcp.json, README.md, data/ (campus_customs.db, campus_customs_new.db), mcp_server/ (server.py, README.md), frontend/, backend/ (main.py, models.py, prompts/ with boss.md, inventory.md, accounting.md, facilities.md, customer_service.md), output/ (harness.md, mcp_smoke.json, desk_tickets.html, design.md, resolved_tickets.json, resolved_board.html, audit_trail.json, github_url.txt).)
+
+### Follow-up prompt 2
+
+> try a fresh clone to see if it works
+
+What was lacking: the first prompt did not ask to check that a grader's fresh clone actually installs and starts.
+
+### Follow-up prompt 3
+
+> stop the clone
+
+### Follow-up prompt 4
+
+> Is the GitHub repo ready?
