@@ -1,0 +1,30 @@
+/* Confetti overlay (Confetti.tsx): fixed, full screen, never blocks clicks. */
+.confetti-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1000;
+  overflow: hidden;
+}
+.confetti-burst { position: absolute; inset: 0; }
+.confetti-piece {
+  position: absolute;
+  left: 50%;
+  top: -18px;
+  display: block;
+  width: 9px;
+  height: 14px;
+  margin-left: -4px;
+  border-radius: 2px;
+  will-change: transform, opacity;
+  backface-visibility: visible;
+}
+.confetti-rect { width: 9px; height: 13px; }
+.confetti-strip { width: 4px; height: 17px; border-radius: 2px; }
+.confetti-dot { width: 8px; height: 8px; border-radius: 50%; }
+/* white pieces get a thin Yale-blue outline so they show on the light floor */
+.confetti-white { box-shadow: inset 0 0 0 1px #286dc0, 0 0 0 0.5px rgba(0, 53, 107, 0.35); }
+
+@media (prefers-reduced-motion: reduce) {
+  .confetti-layer { display: none; }
+}

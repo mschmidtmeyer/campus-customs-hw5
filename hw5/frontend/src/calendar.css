@@ -1,0 +1,129 @@
+/* ===== Wall flip calendar: hangs from a nail on two rings, top half folds down on a new day ===== */
+.cal { position: relative; display: inline-block; width: 116px; user-select: none; }
+
+.cal-hanger { display: block; width: 100%; height: 18px; overflow: visible; }
+.cal-hanger path { fill: none; stroke: #8a6d4b; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.cal-hanger circle { fill: #9aa7b6; stroke: #4b5868; stroke-width: 1; }
+
+.cal-body { position: relative; transform-origin: 50% -14px; }
+.cal.is-flipping .cal-body { animation: cal-sway 0.9s ease-in-out; }
+
+/* Metal rings: only the part above the punched hole shows, so they look threaded through the page */
+.cal-ring {
+  position: absolute; z-index: 5; top: -6px;
+  width: 12px; height: 20px;
+  border: 2.5px solid #aeb9c7; border-radius: 7px;
+  box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.75), inset -1px -1px 0 rgba(60, 75, 95, 0.35);
+  clip-path: inset(0 0 6px 0);
+}
+.cal-ring-left { left: 24px; }
+.cal-ring-right { right: 24px; }
+
+.cal-page {
+  position: relative; height: 132px; border-radius: 6px;
+  perspective: 420px;
+  box-shadow:
+    0 2px 0 -1px #ece6d6,
+    0 4px 0 -2px #ddd5c0,
+    0 6px 0 -3px #cfc6ae,
+    0 12px 18px rgba(0, 37, 76, 0.25);
+}
+.cal-page::after {
+  content: ''; position: absolute; z-index: 4; left: 0; right: 0; top: 50%; height: 1px;
+  background: rgba(0, 37, 76, 0.1); pointer-events: none;
+}
+
+/* A page is drawn twice, once clipped to each half */
+.cal-half { position: absolute; left: 0; right: 0; height: 50%; overflow: hidden; background: var(--paper); }
+.cal-half-top { top: 0; border-radius: 6px 6px 0 0; }
+.cal-half-bottom { top: 50%; border-radius: 0 0 6px 6px; }
+.cal-face { position: absolute; left: 0; right: 0; top: 0; height: 200%; display: flex; flex-direction: column; }
+.cal-half-bottom .cal-face { top: -100%; }
+
+.cal-month {
+  position: relative; flex: none; height: 36px; padding-top: 14px;
+  font-size: 14px; font-weight: 800; line-height: 1; letter-spacing: 0.24em; text-indent: 0.24em;
+  text-align: center; color: #fff;
+  background: linear-gradient(180deg, var(--yale-light), var(--yale) 60%, var(--yale-dark));
+}
+/* Punched holes for the rings */
+.cal-month::before,
+.cal-month::after {
+  content: ''; position: absolute; top: 5px; width: 6px; height: 6px; border-radius: 50%;
+  background: #0a1626; box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.6), 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+.cal-month::before { left: 27px; }
+.cal-month::after { right: 27px; }
+
+.cal-day {
+  flex: 1; display: grid; place-items: center;
+  font: 700 54px/1 var(--serif); letter-spacing: -0.02em; color: var(--yale-dark);
+  font-variant-numeric: lining-nums;
+}
+.cal-sub {
+  flex: none; height: 30px; display: flex; flex-direction: column; align-items: center;
+  font-size: 11px; line-height: 1.25; color: var(--muted);
+}
+.cal-weekday { font-weight: 700; color: var(--yale); }
+.cal-year { font: 10px var(--mono); letter-spacing: 0.08em; }
+
+/* The folding flap: old top half on the front, new bottom half on the back */
+.cal-flap {
+  position: absolute; z-index: 2; left: 0; right: 0; top: 0; height: 50%;
+  transform-origin: 50% 100%; transform-style: preserve-3d;
+  animation: cal-flip 0.72s cubic-bezier(0.45, 0.05, 0.4, 1) forwards;
+}
+.cal-flap > .cal-half {
+  top: 0; height: 100%;
+  -webkit-backface-visibility: hidden; backface-visibility: hidden;
+}
+.cal-flap > .cal-flap-back { transform: rotateX(180deg); }
+.cal-flap > .cal-half::after { content: ''; position: absolute; inset: 0; opacity: 0; pointer-events: none; }
+.cal-flap > .cal-flap-front::after {
+  background: linear-gradient(180deg, rgba(0, 37, 76, 0.04), rgba(0, 37, 76, 0.34));
+  animation: cal-shade-front 0.72s linear forwards;
+}
+.cal-flap > .cal-flap-back::after {
+  background: linear-gradient(0deg, rgba(0, 37, 76, 0.04), rgba(0, 37, 76, 0.3));
+  animation: cal-shade-back 0.72s linear forwards;
+}
+
+/* Compact: a small desk calendar in the top bar (no hanger, month · day · weekday) */
+.cal-compact { width: 60px; }
+.cal-compact .cal-hanger { display: none; }
+.cal-compact .cal-body { transform-origin: 50% -4px; }
+.cal-compact .cal-ring { top: -4px; width: 7px; height: 11px; border-width: 1.5px; border-radius: 4px; clip-path: inset(0 0 3px 0); }
+.cal-compact .cal-ring-left { left: 12px; }
+.cal-compact .cal-ring-right { right: 12px; }
+.cal-compact .cal-page {
+  height: 50px; border-radius: 4px; perspective: 260px;
+  box-shadow: 0 1px 0 -0.5px #ece6d6, 0 2px 0 -1px #ddd5c0, 0 4px 8px rgba(0, 20, 45, 0.35);
+}
+.cal-compact .cal-half-top { border-radius: 4px 4px 0 0; }
+.cal-compact .cal-half-bottom { border-radius: 0 0 4px 4px; }
+.cal-compact .cal-month { height: 14px; padding-top: 3px; font-size: 8px; letter-spacing: 0.2em; text-indent: 0.2em; }
+.cal-compact .cal-month::before,
+.cal-compact .cal-month::after { top: 2px; width: 3px; height: 3px; }
+.cal-compact .cal-month::before { left: 14px; }
+.cal-compact .cal-month::after { right: 14px; }
+.cal-compact .cal-day { font-size: 23px; }
+.cal-compact .cal-sub { height: 10px; font-size: 7px; line-height: 1; }
+.cal-compact .cal-year { display: none; }
+
+@keyframes cal-flip {
+  from { transform: rotateX(0deg); }
+  to { transform: rotateX(-180deg); }
+}
+@keyframes cal-shade-front {
+  0% { opacity: 0; }
+  50%, 100% { opacity: 1; }
+}
+@keyframes cal-shade-back {
+  0%, 50% { opacity: 1; }
+  100% { opacity: 0; }
+}
+@keyframes cal-sway {
+  0%, 100% { transform: rotate(0deg); }
+  30% { transform: rotate(1.6deg); }
+  65% { transform: rotate(-1deg); }
+}

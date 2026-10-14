@@ -1,0 +1,98 @@
+{
+  "run": {
+    "database": "HW 5/data/campus_customs_new.db",
+    "audit_trail": "HW 5/output/audit_trail.json",
+    "start": {
+      "shop_date": "2026-08-31",
+      "checking": 3400.0
+    },
+    "end": {
+      "shop_date": "2026-09-05",
+      "checking": 910.0,
+      "matches_cash_accounts": true
+    },
+    "team_runs": 11,
+    "model": "gpt-6-luna",
+    "total_tokens": 1211171
+  },
+  "tickets": [
+    {
+      "id": 101,
+      "type": "customer_order",
+      "requester": "Tauhid Zaman",
+      "final_status": "closed",
+      "resolved_on": "2026-09-05",
+      "outcome": "Invoice 501 (rush reprint) linked as 105 incoming tees and paid ($840); after the 5-day lead time the tees arrived and 1 tee sold at list price $28. 104 tees left.",
+      "agents": {
+        "boss": "Assigned customer service as lead (inventory, accounting support); asked the owner to confirm the 105-tee estimate; confirmed restock order #1; closed the ticket.",
+        "customer_service": "Checked the order, asked inventory for stock and accounting about invoice 501, kept 4 draft replies to the customer (none sent), sold the tee, asked to close.",
+        "inventory": "Checked stock and vendor, linked invoice 501 as incoming stock instead of ordering again, confirmed the arrival date, received the 105 tees.",
+        "accounting": "Checked bills and cash, requested payment of invoice 501, confirmed it was paid without paying twice."
+      },
+      "human_approvals": [
+        "Approved and paid payment request #1: invoice 501, $840 (2026-08-31)",
+        "Decided escalation #1: confirm 105 tees at $8 each",
+        "Moved the shop date to 2026-09-05 so the delivery could arrive"
+      ],
+      "cash": {
+        "paid_out": 840.0,
+        "sales": 28.0,
+        "net": -812.0
+      }
+    },
+    {
+      "id": 102,
+      "type": "rent_notice",
+      "requester": "Elm City Properties",
+      "final_status": "closed",
+      "resolved_on": "2026-09-02",
+      "outcome": "Rent of $2,400 for lease 1 approved early and paid on its due date, 2026-09-02; next rent due 2026-10-02.",
+      "agents": {
+        "boss": "Assigned facilities as lead (accounting support), set the payment priority, checked the cash forecast, escalated October's rent shortfall to the owner, posted the boss's plan, closed the ticket.",
+        "facilities": "Confirmed lease 1: $2,400 due 2026-09-02, sent the facts to accounting, confirmed the payment, asked to close.",
+        "accounting": "Requested the rent payment, paid it on the due date after the owner's approval, told facilities."
+      },
+      "human_approvals": [
+        "Approved payment request #2: rent $2,400 (paid on 2026-09-02)",
+        "Decided escalation #2: keep paying on the due date; raise at least $1,490 before 2026-10-02",
+        "Moved the shop date to 2026-09-02"
+      ],
+      "cash": {
+        "paid_out": 2400.0,
+        "sales": 0.0,
+        "net": -2400.0
+      }
+    },
+    {
+      "id": 103,
+      "type": "price_override",
+      "requester": "Yale AI Club",
+      "final_status": "closed",
+      "resolved_on": "2026-09-05",
+      "outcome": "Price set at $49.30 (15% off, the policy maximum for 20 units); 8 hoodies sold at once as a boss-approved partial shipment; 12 more ordered ($264, paid) and sold after arrival. All 20 sold for $986.",
+      "agents": {
+        "boss": "Assigned customer service as lead, approved the partial shipment of 8, confirmed the $22 restock price, set payment priority with the cash forecast, recommended the plan, closed the ticket.",
+        "customer_service": "Set the price within policy, sold 8 then 12 hoodies, asked inventory for the 12 missing, kept 4 draft replies (none sent), asked to close.",
+        "inventory": "Checked stock and vendor, ordered 12 hoodies (invoice 502), received them.",
+        "accounting": "Requested payment of invoice 502 ($264) once the boss confirmed its price."
+      },
+      "human_approvals": [
+        "Approved and paid payment request #3: invoice 502, $264 (2026-08-31)",
+        "Moved the shop date to 2026-09-05 so the 12 hoodies could arrive"
+      ],
+      "cash": {
+        "paid_out": 264.0,
+        "sales": 986.0,
+        "net": 722.0
+      }
+    }
+  ],
+  "cash_check": {
+    "start": 3400.0,
+    "paid_out": 3504.0,
+    "sales": 1014.0,
+    "end": 910.0,
+    "database_checking": 910.0,
+    "ok": true
+  }
+}

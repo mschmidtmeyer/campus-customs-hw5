@@ -1,0 +1,506 @@
+{
+  "title": "Problem 4: MCP smoke test",
+  "server": "campus-customs (HW 5/mcp_server/server.py, registered in the project-root .mcp.json)",
+  "client": "Claude Code (vibe coder)",
+  "database": "HW 5/data/campus_customs_new.db",
+  "shop_today": "2026-08-31",
+  "run_date": "2026-10-12",
+  "result": "pass",
+  "tests": [
+    {
+      "step": 1,
+      "tool": "fulfill_customer_order",
+      "prompt": "We just got a customer order from Tauhid Zaman. He's ordering a specific item. Just fulfill the customer order, please.",
+      "arguments": {
+        "ticket_id": 101
+      },
+      "output": {
+        "today": "2026-08-31",
+        "ticket_id": 101,
+        "item": "Classic Bulldog Tee (CC-TEE-WHITE) size S",
+        "requested_qty": 1,
+        "on_hand": 0,
+        "unit_price": 28,
+        "cash_in": 28,
+        "account": "checking",
+        "done": false,
+        "shortfall": 1,
+        "reason": "Not enough stock; ticket stays open until restocked.",
+        "restock": {
+          "linked_invoice": {
+            "id": 501,
+            "vendor_id": 1,
+            "amount": 840,
+            "due_date": "2026-08-28",
+            "status": "open",
+            "description": "Rush reprint CC-TEE-WHITE S"
+          },
+          "days_past_due": 3,
+          "vendor": {
+            "id": 1,
+            "name": "Bulldog Print Co",
+            "specialty": "apparel reprint",
+            "lead_days": 5
+          },
+          "vendor_blocked": true,
+          "unpaid_invoices": [
+            {
+              "id": 501,
+              "amount": 840,
+              "due_date": "2026-08-28",
+              "status": "open"
+            }
+          ],
+          "amount_to_unblock": 840,
+          "lead_days": 5
+        }
+      },
+      "outcome": "Correct refusal: size S tee has 0 in stock, and Bulldog Print Co is blocked by open invoice 501, so nothing changed.",
+      "db_check": [
+        {
+          "check": "today",
+          "tool_value": "2026-08-31",
+          "db_value": "2026-08-31",
+          "db_source": "desk.date_today",
+          "match": true
+        },
+        {
+          "check": "requested_qty",
+          "tool_value": 1,
+          "db_value": 1,
+          "db_source": "tickets.qty (id 101)",
+          "match": true
+        },
+        {
+          "check": "on_hand",
+          "tool_value": 0,
+          "db_value": 0,
+          "db_source": "inventory.qty (CC-TEE-WHITE, S)",
+          "match": true
+        },
+        {
+          "check": "unit_price",
+          "tool_value": 28,
+          "db_value": 28.0,
+          "db_source": "pricing.list_price (CC-TEE-WHITE)",
+          "match": true
+        },
+        {
+          "check": "shortfall",
+          "tool_value": 1,
+          "db_value": 1,
+          "db_source": "tickets.qty - inventory.qty",
+          "match": true
+        },
+        {
+          "check": "linked_invoice",
+          "tool_value": {
+            "id": 501,
+            "vendor_id": 1,
+            "amount": 840,
+            "due_date": "2026-08-28",
+            "status": "open",
+            "description": "Rush reprint CC-TEE-WHITE S"
+          },
+          "db_value": {
+            "id": 501,
+            "vendor_id": 1,
+            "amount": 840.0,
+            "due_date": "2026-08-28",
+            "status": "open",
+            "description": "Rush reprint CC-TEE-WHITE S"
+          },
+          "db_source": "invoices row 501",
+          "match": true
+        },
+        {
+          "check": "days_past_due",
+          "tool_value": 3,
+          "db_value": 3,
+          "db_source": "desk.date_today - invoices.due_date",
+          "match": true
+        },
+        {
+          "check": "vendor",
+          "tool_value": {
+            "id": 1,
+            "name": "Bulldog Print Co",
+            "specialty": "apparel reprint",
+            "lead_days": 5
+          },
+          "db_value": {
+            "id": 1,
+            "name": "Bulldog Print Co",
+            "specialty": "apparel reprint",
+            "lead_days": 5
+          },
+          "db_source": "vendors row 1",
+          "match": true
+        },
+        {
+          "check": "lead_days",
+          "tool_value": 5,
+          "db_value": 5,
+          "db_source": "vendors.lead_days",
+          "match": true
+        },
+        {
+          "check": "unpaid_invoices",
+          "tool_value": [
+            {
+              "id": 501,
+              "amount": 840,
+              "due_date": "2026-08-28",
+              "status": "open"
+            }
+          ],
+          "db_value": [
+            {
+              "id": 501,
+              "amount": 840.0,
+              "due_date": "2026-08-28",
+              "status": "open"
+            }
+          ],
+          "db_source": "invoices WHERE vendor_id=1 AND status='open'",
+          "match": true
+        },
+        {
+          "check": "vendor_blocked",
+          "tool_value": true,
+          "db_value": true,
+          "db_source": "any open invoice for vendor 1",
+          "match": true
+        },
+        {
+          "check": "amount_to_unblock",
+          "tool_value": 840,
+          "db_value": 840.0,
+          "db_source": "sum of open invoices for vendor 1",
+          "match": true
+        },
+        {
+          "check": "ticket left open (done=false)",
+          "tool_value": "open",
+          "db_value": "open",
+          "db_source": "tickets.status (id 101)",
+          "match": true
+        },
+        {
+          "check": "stock unchanged",
+          "tool_value": 0,
+          "db_value": 0,
+          "db_source": "inventory.qty before vs after",
+          "match": true
+        }
+      ],
+      "all_match": true
+    },
+    {
+      "step": 2,
+      "tool": "pay_bill",
+      "prompt": "Hey, rent is due. Please make sure that we pay it.",
+      "arguments": {
+        "kind": "rent",
+        "ref_id": 1,
+        "approved_by": "Manuel"
+      },
+      "output": {
+        "today": "2026-08-31",
+        "kind": "rent",
+        "ref_id": 1,
+        "payee": "Elm City Properties",
+        "amount": 2400,
+        "due": "2026-09-02",
+        "days_until_due": 2,
+        "account": "checking",
+        "balance_before": 3400,
+        "balance_after": 1000,
+        "lease_next_due": "2026-10-02",
+        "done": true,
+        "approved_by": "Manuel"
+      },
+      "outcome": "Paid: $2,400 rent to Elm City Properties, approved by Manuel. Checking went from $3,400 to $1,000, next rent due 2026-10-02, ticket 102 resolved.",
+      "db_check": [
+        {
+          "check": "payee",
+          "tool_value": "Elm City Properties",
+          "db_value": "Elm City Properties",
+          "db_source": "leases.landlord",
+          "match": true
+        },
+        {
+          "check": "amount",
+          "tool_value": 2400,
+          "db_value": 2400.0,
+          "db_source": "leases.monthly_rent",
+          "match": true
+        },
+        {
+          "check": "due",
+          "tool_value": "2026-09-02",
+          "db_value": "2026-09-02",
+          "db_source": "leases.next_due before payment",
+          "match": true
+        },
+        {
+          "check": "days_until_due",
+          "tool_value": 2,
+          "db_value": 2,
+          "db_source": "leases.next_due - desk.date_today",
+          "match": true
+        },
+        {
+          "check": "balance_before",
+          "tool_value": 3400,
+          "db_value": 3400.0,
+          "db_source": "cash_accounts.balance before",
+          "match": true
+        },
+        {
+          "check": "balance_after",
+          "tool_value": 1000,
+          "db_value": 1000.0,
+          "db_source": "cash_accounts.balance now",
+          "match": true
+        },
+        {
+          "check": "lease_next_due",
+          "tool_value": "2026-10-02",
+          "db_value": "2026-10-02",
+          "db_source": "leases.next_due now",
+          "match": true
+        },
+        {
+          "check": "payment recorded",
+          "tool_value": {
+            "kind": "rent",
+            "ref_id": 1,
+            "amount": 2400,
+            "account": "checking",
+            "paid_at": "2026-08-31",
+            "approved_by": "Manuel"
+          },
+          "db_value": {
+            "kind": "rent",
+            "ref_id": 1,
+            "amount": 2400.0,
+            "account": "checking",
+            "paid_at": "2026-08-31",
+            "approved_by": "Manuel"
+          },
+          "db_source": "payments row",
+          "match": true
+        },
+        {
+          "check": "rent ticket resolved",
+          "tool_value": "resolved",
+          "db_value": "resolved",
+          "db_source": "tickets.status (id 102)",
+          "match": true
+        }
+      ],
+      "all_match": true
+    },
+    {
+      "step": 3,
+      "tool": "apply_discount",
+      "prompt": "The Yale AI Club wants 20 navy hoodies in size M and asked for a bulk discount. Sell them at $40 each, please.",
+      "arguments": {
+        "ticket_id": 103,
+        "unit_price": 40
+      },
+      "output": {
+        "today": "2026-08-31",
+        "ticket_id": 103,
+        "item": "Basic Hoodie Big Yale (CC-HOOD-NAVY) size M",
+        "requested_qty": 20,
+        "on_hand": 8,
+        "unit_price": 40,
+        "cash_in": 800,
+        "account": "checking",
+        "done": false,
+        "shortfall": 12,
+        "reason": "Not enough stock; ticket stays open until restocked.",
+        "pricing": {
+          "unit_cost": 22,
+          "list_price": 58,
+          "max_discount_pct_before_loss": 62.1,
+          "discount_pct": 31,
+          "margin_per_unit": 18
+        }
+      },
+      "outcome": "Price accepted ($40 is above the $22 cost, a 31% discount), but only 8 of 20 are in stock, so nothing changed.",
+      "db_check": [
+        {
+          "check": "requested_qty",
+          "tool_value": 20,
+          "db_value": 20,
+          "db_source": "tickets.qty (id 103)",
+          "match": true
+        },
+        {
+          "check": "on_hand",
+          "tool_value": 8,
+          "db_value": 8,
+          "db_source": "inventory.qty (CC-HOOD-NAVY, M)",
+          "match": true
+        },
+        {
+          "check": "shortfall",
+          "tool_value": 12,
+          "db_value": 12,
+          "db_source": "tickets.qty - inventory.qty",
+          "match": true
+        },
+        {
+          "check": "unit_cost",
+          "tool_value": 22,
+          "db_value": 22.0,
+          "db_source": "pricing.unit_cost",
+          "match": true
+        },
+        {
+          "check": "list_price",
+          "tool_value": 58,
+          "db_value": 58.0,
+          "db_source": "pricing.list_price",
+          "match": true
+        },
+        {
+          "check": "discount_pct",
+          "tool_value": 31,
+          "db_value": 31.0,
+          "db_source": "(list_price - 40) / list_price",
+          "match": true
+        },
+        {
+          "check": "margin_per_unit",
+          "tool_value": 18,
+          "db_value": 18.0,
+          "db_source": "40 - unit_cost",
+          "match": true
+        },
+        {
+          "check": "max_discount_pct_before_loss",
+          "tool_value": 62.1,
+          "db_value": 62.1,
+          "db_source": "(list_price - unit_cost) / list_price",
+          "match": true
+        },
+        {
+          "check": "cash_in",
+          "tool_value": 800,
+          "db_value": 800,
+          "db_source": "40 x tickets.qty",
+          "match": true
+        },
+        {
+          "check": "ticket left open (done=false)",
+          "tool_value": "open",
+          "db_value": "open",
+          "db_source": "tickets.status (id 103)",
+          "match": true
+        },
+        {
+          "check": "stock unchanged",
+          "tool_value": 8,
+          "db_value": 8,
+          "db_source": "inventory.qty before vs after",
+          "match": true
+        }
+      ],
+      "all_match": true
+    }
+  ],
+  "db_before": {
+    "cash_accounts": [
+      {
+        "name": "checking",
+        "balance": 3400.0,
+        "date": "2026-08-31"
+      }
+    ],
+    "leases": [
+      {
+        "id": 1,
+        "space_name": "Chapel Street shop",
+        "landlord": "Elm City Properties",
+        "monthly_rent": 2400.0,
+        "next_due": "2026-09-02",
+        "notes": null
+      }
+    ],
+    "payments": [],
+    "tickets": [
+      {
+        "id": 101,
+        "type": "customer_order",
+        "status": "open",
+        "notes": "Needs a tee in size S."
+      },
+      {
+        "id": 102,
+        "type": "rent_notice",
+        "status": "open",
+        "notes": "Email: shop rent due in 2 days."
+      },
+      {
+        "id": 103,
+        "type": "price_override",
+        "status": "open",
+        "notes": "Student org wants 20 hoodies, size M, asking for a bulk discount."
+      }
+    ]
+  },
+  "db_after": {
+    "cash_accounts": [
+      {
+        "name": "checking",
+        "balance": 1000.0,
+        "date": "2026-08-31"
+      }
+    ],
+    "leases": [
+      {
+        "id": 1,
+        "space_name": "Chapel Street shop",
+        "landlord": "Elm City Properties",
+        "monthly_rent": 2400.0,
+        "next_due": "2026-10-02",
+        "notes": null
+      }
+    ],
+    "payments": [
+      {
+        "id": 1,
+        "kind": "rent",
+        "ref_id": 1,
+        "amount": 2400.0,
+        "account": "checking",
+        "paid_at": "2026-08-31",
+        "approved_by": "Manuel"
+      }
+    ],
+    "tickets": [
+      {
+        "id": 101,
+        "type": "customer_order",
+        "status": "open",
+        "notes": "Needs a tee in size S."
+      },
+      {
+        "id": 102,
+        "type": "rent_notice",
+        "status": "resolved",
+        "notes": "Email: shop rent due in 2 days. | 2026-08-31: rent 2400.00 paid, approved by Manuel"
+      },
+      {
+        "id": 103,
+        "type": "price_override",
+        "status": "open",
+        "notes": "Student org wants 20 hoodies, size M, asking for a bulk discount."
+      }
+    ]
+  }
+}

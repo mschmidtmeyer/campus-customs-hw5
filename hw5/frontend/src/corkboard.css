@@ -1,0 +1,307 @@
+/* ===== Ticket board: cork in a wooden frame, sticky notes pinned with Yale-blue pushpins =====
+   Desktop: a tall column that scrolls inside the cork. Below 1200px: one row that scrolls sideways. */
+.cork { position: relative; display: flex; flex-direction: column; }
+.cork-defs { position: absolute; width: 0; height: 0; overflow: hidden; }
+
+.cork-frame {
+  position: relative; flex: 1; min-height: 0;
+  display: flex; flex-direction: column;
+  padding: 40px 8px 8px;
+  border-radius: 10px;
+  background:
+    repeating-linear-gradient(178deg, rgba(90, 50, 20, 0.14) 0 1px, transparent 1px 7px),
+    repeating-linear-gradient(3deg, rgba(255, 240, 220, 0.08) 0 2px, transparent 2px 13px),
+    linear-gradient(180deg, var(--wood-light), var(--wood) 35%, var(--wood-dark));
+  box-shadow:
+    var(--shadow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.22);
+}
+
+/* Enamel name plate screwed to the top rail */
+.cork-title {
+  position: absolute; left: 50%; top: 8px; transform: translateX(-50%);
+  padding: 4px 26px 5px;
+  font: 600 15px/1.2 var(--serif); letter-spacing: 0.06em; color: #fff; white-space: nowrap;
+  background: linear-gradient(180deg, var(--yale-light), var(--yale) 55%, var(--yale-dark));
+  border-radius: 4px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 2px 3px rgba(0, 0, 0, 0.35);
+}
+.cork-title::before,
+.cork-title::after {
+  content: ''; position: absolute; top: 50%; width: 6px; height: 6px; margin-top: -3px; border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #fff6d0, var(--gold) 45%, #8a6a1c);
+}
+.cork-title::before { left: 8px; }
+.cork-title::after { right: 8px; }
+
+.cork-surface {
+  position: relative; flex: 1; min-height: 0;
+  overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain;
+  scrollbar-width: thin; scrollbar-color: rgba(90, 55, 20, 0.55) transparent;
+  padding: 20px 14px 18px;
+  border-radius: 4px;
+  background-color: var(--cork);
+  background-image:
+    radial-gradient(rgba(90, 55, 20, 0.38) 0.8px, transparent 1.5px),
+    radial-gradient(rgba(255, 238, 205, 0.32) 0.7px, transparent 1.4px),
+    radial-gradient(rgba(110, 70, 30, 0.26) 1.2px, transparent 2.2px),
+    radial-gradient(ellipse at 28% 18%, rgba(255, 255, 255, 0.14), transparent 60%),
+    linear-gradient(135deg, var(--cork) 0%, var(--cork-dark) 100%);
+  background-size: 7px 7px, 11px 11px, 17px 13px, 100% 100%, 100% 100%;
+  background-position: 0 0, 3px 5px, 6px 2px, 0 0, 0 0;
+  box-shadow: inset 0 2px 10px rgba(60, 35, 10, 0.5), inset 0 0 0 1px rgba(60, 35, 10, 0.25);
+}
+
+.cork-notes {
+  list-style: none; margin: 0; padding: 0;
+  display: flex; flex-direction: column; gap: 18px;
+}
+.cork-slot { position: relative; }
+.cork-slot.is-filed { animation: cork-file 0.5s cubic-bezier(0.2, 0.8, 0.3, 1) both; }
+
+/* "Resolved" divider: a paper tag on a stitched line, above the filed notes */
+.cork-divider {
+  display: flex; align-items: center; gap: 8px; margin: 2px -4px -4px;
+}
+.cork-divider::before,
+.cork-divider::after {
+  content: ''; flex: 1; height: 2px;
+  background: repeating-linear-gradient(90deg, rgba(255, 250, 235, 0.75) 0 7px, transparent 7px 12px);
+}
+.cork-divider span {
+  flex: none; padding: 3px 10px; border-radius: 3px;
+  font: 800 10px/1.3 var(--mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--yale);
+  background: var(--paper); box-shadow: 0 2px 4px rgba(60, 40, 10, 0.35), inset 0 0 0 1.5px rgba(0, 53, 107, 0.25);
+}
+
+.cork-empty {
+  position: relative; max-width: 240px; margin: 20px auto; padding: 22px 18px 18px;
+  text-align: center; font: 15px/1.4 var(--serif); color: var(--muted);
+  background: var(--paper); transform: rotate(-1.5deg);
+  box-shadow: 0 6px 12px -4px rgba(60, 40, 10, 0.4);
+}
+
+/* ===== Sticky note ===== */
+.note {
+  --note: #fbf3dc;
+  position: relative; z-index: 0;
+  padding: 14px 12px 10px;
+  color: var(--ink);
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.05), transparent 16px),
+    linear-gradient(160deg, rgba(255, 255, 255, 0.4), transparent 45%),
+    linear-gradient(315deg, rgba(0, 0, 0, 0.07), transparent 18%),
+    var(--note);
+  border-radius: 2px 2px 4px 2px / 2px 2px 14px 2px;
+  box-shadow:
+    0 1px 1px rgba(60, 40, 10, 0.18),
+    0 6px 10px -3px rgba(60, 40, 10, 0.3),
+    0 18px 18px -14px rgba(60, 40, 10, 0.5);
+  transform: rotate(var(--tilt, 0deg));
+  transition: transform 0.25s ease, box-shadow 0.25s ease, background-color 0.4s ease;
+}
+.note-yellow { --note: #fff0a3; }
+.note-pink { --note: #ffd2df; }
+.note-blue { --note: #d3e7ff; }
+.note-mint { --note: #cdf0dc; }
+.note-cream { --note: #fbf3dc; }
+
+.note:hover { transform: rotate(calc(var(--tilt, 0deg) * 0.5)) translateY(-2px); }
+.note.is-selected {
+  z-index: 2;
+  transform: rotate(calc(var(--tilt, 0deg) * 0.3)) translateY(-7px) scale(1.035);
+  outline: 3px solid var(--yale-light); outline-offset: 3px;
+  box-shadow:
+    0 2px 2px rgba(60, 40, 10, 0.18),
+    0 16px 22px -6px rgba(0, 37, 76, 0.4),
+    0 30px 30px -20px rgba(0, 37, 76, 0.45);
+}
+
+/* Filed away: paper goes a little grey, writing fades, stamp stays crisp */
+.note.is-resolved {
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.05), transparent 16px),
+    color-mix(in srgb, var(--note) 62%, #e6e0d2);
+}
+.note.is-resolved .note-body { opacity: 0.6; filter: saturate(0.55); }
+.note.is-resolved.is-selected .note-body { opacity: 0.8; }
+
+/* Yale-blue pushpin */
+.note-pin {
+  position: absolute; z-index: 4; top: -8px; left: var(--pin-x, 50%);
+  width: 18px; height: 18px; margin-left: -9px; border-radius: 50%;
+  background: radial-gradient(circle at 34% 30%, #a9cfff 0 2px, #4a8ad6 3.5px, var(--yale) 62%, var(--yale-dark) 100%);
+  box-shadow: 0 2px 0 rgba(0, 20, 45, 0.35), 3px 6px 6px rgba(40, 25, 5, 0.35);
+  pointer-events: none;
+}
+.note-pin::after {
+  content: ''; position: absolute; left: 50%; top: 50%; width: 8px; height: 8px; margin: -4px 0 0 -4px;
+  border-radius: 50%; box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.18);
+}
+.cork-empty .note-pin { left: 50%; }
+
+/* Whole-note click target sits under the start button */
+.note .note-select,
+.note .note-select:hover:not(:disabled),
+.note .note-select:active:not(:disabled) {
+  position: absolute; inset: 0; z-index: 1;
+  padding: 0; border-radius: inherit;
+  background: transparent; color: inherit; transform: none; cursor: pointer;
+}
+.note-sr {
+  position: absolute; width: 1px; height: 1px; overflow: hidden;
+  clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap;
+}
+
+.note-body { position: relative; transition: opacity 0.4s ease, filter 0.4s ease; }
+
+.note-head { display: flex; align-items: baseline; gap: 8px; margin-bottom: 2px; }
+.note-id { font: 700 13px var(--mono); color: var(--yale); }
+.note-type {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+  color: rgba(16, 35, 63, 0.62);
+}
+.note-subject {
+  margin: 1px 0 1px;
+  font: 600 15px/1.22 "Marker Felt", "Bradley Hand", "Segoe Print", "Comic Sans MS", cursive;
+  color: var(--yale-dark);
+  overflow-wrap: anywhere;
+}
+.note-from { margin: 0 0 6px; font-size: 11.5px; color: var(--muted); }
+
+.note-row { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 8px; margin-bottom: 6px; }
+.note-lead { display: inline-flex; align-items: center; gap: 5px; min-width: 0; }
+.note-lead-dog {
+  display: inline-grid; place-items: center; width: 36px; height: 36px; flex: none;
+  border-radius: 50%; background: rgba(255, 255, 255, 0.55);
+  box-shadow: inset 0 0 0 1px rgba(0, 53, 107, 0.15);
+}
+.note-lead-text { display: flex; flex-direction: column; font-size: 11px; font-weight: 600; line-height: 1.15; color: var(--ink); }
+.note-lead-text small {
+  font-size: 9px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted);
+}
+.note-badges { display: inline-flex; flex-wrap: wrap; gap: 4px; margin-left: auto; }
+.note-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 2px 7px; border-radius: 999px;
+  font-size: 10px; font-weight: 700; white-space: nowrap;
+}
+.note-badge-ok { background: var(--gold); color: var(--yale-dark); box-shadow: 0 1px 0 rgba(0, 0, 0, 0.15); }
+.note-badge-ok::before {
+  content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--yale);
+  animation: note-blink 1.6s ease-in-out infinite;
+}
+.note-badge-ask { background: #fff; color: var(--yale); box-shadow: inset 0 0 0 1.5px var(--yale-light); }
+/* Queued: the team takes this ticket when the current run ends */
+.note-badge-queued {
+  color: var(--yale); background: rgba(255, 255, 255, 0.7);
+  box-shadow: inset 0 0 0 1.5px rgba(0, 53, 107, 0.35);
+  font-family: var(--mono); letter-spacing: 0.06em; text-transform: uppercase;
+}
+
+/* 5-step progress strip */
+.note-steps {
+  list-style: none; margin: 0 0 8px; padding: 0;
+  display: grid; grid-template-columns: repeat(5, 1fr);
+}
+.note-step { position: relative; display: flex; flex-direction: column; align-items: center; text-align: center; }
+.note-step + .note-step::before {
+  content: ''; position: absolute; top: 4px; right: 50%; width: 100%; height: 2px;
+  background: rgba(0, 53, 107, 0.16); z-index: 0;
+}
+.note-step.is-on + .note-step.is-on::before { background: var(--yale-light); }
+.note-dot {
+  position: relative; z-index: 1;
+  width: 10px; height: 10px; border-radius: 50%;
+  background: rgba(255, 255, 255, 0.85); box-shadow: inset 0 0 0 2px rgba(0, 53, 107, 0.25);
+  transition: background 0.3s, box-shadow 0.3s;
+}
+.note-step.is-on .note-dot { background: var(--yale); box-shadow: inset 0 0 0 2px var(--yale), 0 0 0 2px rgba(255, 255, 255, 0.7); }
+.note-step.is-now .note-dot { animation: note-pulse 1.3s ease-out infinite; }
+.note-step-label {
+  margin-top: 3px; padding: 0 1px;
+  font-size: 9px; line-height: 1.1; font-weight: 600; color: rgba(16, 35, 63, 0.5);
+}
+.note-step.is-on .note-step-label { color: var(--yale); font-weight: 700; }
+
+/* The owner's next step, under the strip: small, Yale blue */
+.note-next {
+  margin: -2px 0 7px; padding: 3px 6px; border-radius: 3px;
+  font-size: 11px; line-height: 1.3; font-weight: 600; color: var(--yale); overflow-wrap: anywhere;
+  background: rgba(255, 255, 255, 0.5); border-left: 3px solid var(--yale-light);
+}
+.note-next b { font-weight: 800; letter-spacing: 0.02em; }
+
+/* Start button sits above the click target */
+.note .note-start {
+  position: relative; z-index: 2;
+  width: 100%; padding: 5px 10px; font-size: 12px;
+  box-shadow: 0 2px 0 var(--yale-dark);
+}
+.note .note-start.is-queued:disabled {
+  opacity: 1; color: var(--yale); background: rgba(255, 255, 255, 0.75);
+  box-shadow: inset 0 0 0 1.5px rgba(0, 53, 107, 0.35);
+}
+.note .note-start.is-running:disabled {
+  opacity: 1; color: #fff;
+  background:
+    repeating-linear-gradient(-45deg, rgba(255, 255, 255, 0.14) 0 8px, transparent 8px 16px),
+    var(--yale-light);
+  background-size: 23px 23px, auto;
+  animation: note-stripes 0.9s linear infinite;
+}
+
+/* Rubber stamp */
+.note-stamp {
+  position: absolute; z-index: 3; left: 50%; top: 52%;
+  width: 84%; height: auto; overflow: visible;
+  color: var(--yale); opacity: 0.85;
+  font-family: Impact, "Arial Black", "Helvetica Neue", Arial, sans-serif; font-weight: 900;
+  transform: translate(-50%, -50%) rotate(var(--stamp-tilt, -12deg));
+  mix-blend-mode: multiply;
+  pointer-events: none;
+}
+.note-stamp.is-new { animation: note-thump 0.55s cubic-bezier(0.3, 0.7, 0.4, 1) both; }
+.note.is-thumped { animation: note-jolt 0.45s ease-out 0.28s both; }
+
+@keyframes cork-file {
+  from { opacity: 0; transform: translateY(-16px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes note-thump {
+  0% { opacity: 0; transform: translate(-50%, -50%) rotate(var(--stamp-tilt, -12deg)) scale(2.3); }
+  55% { opacity: 0.95; transform: translate(-50%, -50%) rotate(var(--stamp-tilt, -12deg)) scale(0.93); }
+  78% { transform: translate(-50%, -50%) rotate(var(--stamp-tilt, -12deg)) scale(1.03); }
+  100% { opacity: 0.85; transform: translate(-50%, -50%) rotate(var(--stamp-tilt, -12deg)) scale(1); }
+}
+@keyframes note-jolt {
+  0% { transform: rotate(var(--tilt, 0deg)) translateY(0); }
+  30% { transform: rotate(calc(var(--tilt, 0deg) - 0.8deg)) translateY(3px) scale(0.985); }
+  100% { transform: rotate(var(--tilt, 0deg)) translateY(0); }
+}
+@keyframes note-pulse {
+  0% { box-shadow: inset 0 0 0 2px var(--yale), 0 0 0 0 rgba(40, 109, 192, 0.6); }
+  100% { box-shadow: inset 0 0 0 2px var(--yale), 0 0 0 7px rgba(40, 109, 192, 0); }
+}
+@keyframes note-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+@keyframes note-stripes {
+  to { background-position: 23px 0, 0 0; }
+}
+
+/* ===== Below 1200px the board is one row of notes that scrolls sideways ===== */
+@media (max-width: 1199px) {
+  .cork-surface { overflow-x: auto; overflow-y: hidden; padding: 22px 16px 18px; }
+  .cork-notes { flex-direction: row; align-items: flex-start; gap: 20px; width: max-content; }
+  .cork-slot { flex: none; width: 236px; }
+  .cork-divider { flex-direction: column; align-self: stretch; margin: -6px 0; }
+  .cork-divider::before,
+  .cork-divider::after {
+    width: 2px; height: auto;
+    background: repeating-linear-gradient(180deg, rgba(255, 250, 235, 0.75) 0 7px, transparent 7px 12px);
+  }
+  .cork-divider span { writing-mode: vertical-rl; transform: rotate(180deg); padding: 10px 3px; }
+}

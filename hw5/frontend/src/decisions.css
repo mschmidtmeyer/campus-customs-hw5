@@ -1,0 +1,207 @@
+/* ===== Owner's decisions (OwnerDecisions.tsx): memos from the boss, calendar memos, discount requests =====
+   A Yale-blue board above the owner's desk, in the same column. On desktop it takes at most about half
+   the column and scrolls on its own, so the in-tray and the bank counter keep their room. */
+.dec {
+  position: relative; flex: 0 1 auto; min-height: 0; max-height: min(46%, 440px);
+  display: flex; flex-direction: column; gap: 12px;
+  padding: 10px 10px 12px;
+  overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain;
+  border-radius: var(--radius);
+  background: linear-gradient(180deg, var(--yale), var(--yale-dark));
+  box-shadow: var(--shadow), inset 0 1px 0 rgba(255, 255, 255, 0.18), inset 0 0 0 2px rgba(255, 255, 255, 0.05);
+  scrollbar-width: thin; scrollbar-color: rgba(188, 210, 238, 0.45) transparent;
+}
+.dec-group { display: flex; flex-direction: column; gap: 12px; }
+.dec-title {
+  display: flex; align-items: center; gap: 8px;
+  font: 700 13.5px/1.2 var(--serif); letter-spacing: 0.03em; color: #fff;
+}
+.dec-title b {
+  min-width: 20px; padding: 1px 6px; border-radius: 999px; text-align: center;
+  font: 700 11px/1.4 var(--mono); color: var(--yale-dark); background: var(--gold);
+}
+.dec-sr {
+  position: absolute; width: 1px; height: 1px; overflow: hidden;
+  clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap;
+}
+
+/* ----- Memo slip: cream paper with ruled lines and a paper clip ----- */
+.dec-memo {
+  position: relative; padding: 14px 12px 10px 14px; margin-top: 4px;
+  color: var(--ink);
+  background:
+    repeating-linear-gradient(180deg, transparent 0 21px, rgba(0, 53, 107, 0.07) 21px 22px),
+    linear-gradient(180deg, #fffaf0, #f6eedb);
+  border-radius: 3px;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.15), 0 6px 12px rgba(0, 0, 0, 0.32);
+  rotate: -0.5deg;
+  animation: dec-in 0.45s cubic-bezier(0.3, 0.7, 0.4, 1) both;
+}
+.dec-memo:nth-of-type(even) { rotate: 0.5deg; }
+.dec-memo.is-sending { rotate: 0deg; box-shadow: 0 0 0 2px var(--sky), 0 8px 16px rgba(0, 0, 0, 0.35); }
+.dec-clip {
+  position: absolute; top: -9px; left: 18px; width: 11px; height: 28px;
+  border: 2px solid #a9bacd; border-radius: 6px;
+  box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.25);
+}
+.dec-clip::after {
+  content: ''; position: absolute; left: 1.5px; right: 1.5px; top: 5px; height: 15px;
+  border: 2px solid #a9bacd; border-top: 0; border-radius: 0 0 4px 4px;
+}
+.dec-memo-head {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 8px;
+  padding: 0 0 4px 22px; margin-bottom: 6px; border-bottom: 2px solid var(--yale);
+}
+.dec-memo-kind { font: 800 11px/1 var(--mono); letter-spacing: 0.28em; color: var(--yale); }
+.dec-memo-no { font: 11px var(--mono); color: var(--muted); white-space: nowrap; }
+.dec-memo-from { margin: 0 0 6px; font-size: 11.5px; color: var(--muted); }
+.dec-memo-from b { font-weight: 700; color: var(--yale-dark); }
+.dec-memo-q { margin: 0 0 8px; font: 13.5px/1.42 var(--serif); color: var(--ink); overflow-wrap: anywhere; }
+.dec-memo-rec {
+  margin: 0 0 9px; padding: 5px 8px;
+  font: 12.5px/1.4 var(--serif); color: var(--yale-dark); overflow-wrap: anywhere;
+  background: rgba(0, 53, 107, 0.06); border-left: 3px solid var(--yale-light); border-radius: 2px;
+}
+.dec-rec-label {
+  display: block; margin-bottom: 1px;
+  font: 700 9.5px/1.3 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted);
+}
+
+.dec-options { display: flex; flex-direction: column; gap: 6px; }
+.dec .dec-option {
+  display: flex; align-items: flex-start; gap: 8px; width: 100%; padding: 7px 10px;
+  font-size: 12.5px; font-weight: 600; line-height: 1.35; text-align: left; overflow-wrap: anywhere;
+  color: var(--yale-dark); background: #fff;
+  border: 1.5px solid var(--yale); border-radius: 6px; box-shadow: 0 2px 0 var(--yale);
+}
+.dec .dec-option:hover:not(:disabled) { color: #fff; background: var(--yale); }
+.dec .dec-option.is-picked { color: #fff; background: var(--yale-light); border-color: var(--yale-light); opacity: 1; }
+.dec-option-n {
+  flex: none; display: inline-grid; place-items: center; width: 18px; height: 18px; margin-top: 0.5px;
+  border-radius: 50%; font: 700 10px/1 var(--mono); color: #fff; background: var(--yale);
+}
+.dec .dec-option:hover:not(:disabled) .dec-option-n,
+.dec .dec-option.is-picked .dec-option-n { color: var(--yale); background: #fff; }
+.dec-note { margin: 7px 0 0; font: italic 12px/1.3 var(--serif); color: var(--muted); }
+
+/* ----- Calendar memo: a tear-off calendar page for a delivery after today's shop date ----- */
+.dec-cal {
+  display: flex; align-items: flex-start; gap: 10px;
+  margin: 0; padding: 10px 10px 10px 10px; color: var(--ink);
+  background: linear-gradient(180deg, #fffdf7, #f1f6fd);
+  border-radius: 4px;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2), 0 6px 12px rgba(0, 0, 0, 0.32);
+  animation: dec-in 0.45s cubic-bezier(0.3, 0.7, 0.4, 1) both;
+}
+.dec-cal-page {
+  flex: none; width: 46px; overflow: hidden; text-align: center;
+  background: #fff; border-radius: 5px;
+  box-shadow: 0 2px 0 rgba(0, 37, 76, 0.25), inset 0 0 0 1px rgba(0, 53, 107, 0.2);
+}
+.dec-cal-month {
+  display: block; padding: 2px 0 1px;
+  font: 800 9.5px/1.3 var(--mono); letter-spacing: 0.12em; text-transform: uppercase; color: #fff;
+  background: var(--yale);
+}
+.dec-cal-day { display: block; padding: 2px 0 4px; font: 700 21px/1.1 var(--serif); color: var(--yale-dark); }
+.dec-cal-body { flex: 1; min-width: 0; }
+.dec-cal-text { margin: 0 0 7px; font: 13px/1.4 var(--serif); color: var(--ink); overflow-wrap: anywhere; }
+.dec-cal-text b { color: var(--yale-dark); }
+.dec .dec-cal-go { padding: 5px 11px; font-size: 12px; white-space: nowrap; box-shadow: 0 2px 0 var(--yale-dark); }
+
+/* Discount section header: the title, and the agents' policy as one small line under it */
+.dec-head { display: flex; flex-direction: column; gap: 3px; }
+.dec-policy { margin: 0; font-size: 11px; line-height: 1.35; color: #cfe0f5; }
+
+/* ----- Discount request card: light check paper with a gold edge (only while an agent's ask waits) ----- */
+.dec-disc {
+  margin: 0; padding: 9px 10px 10px 12px; color: var(--ink);
+  background:
+    repeating-linear-gradient(45deg, rgba(0, 53, 107, 0.03) 0 2px, transparent 2px 7px),
+    linear-gradient(180deg, #f7faff, #e5eef9);
+  border-left: 4px solid var(--gold); border-radius: 4px;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2), 0 6px 12px rgba(0, 0, 0, 0.32);
+  animation: dec-in 0.45s cubic-bezier(0.3, 0.7, 0.4, 1) both;
+}
+.dec-disc-head {
+  margin: 0 0 4px; font-size: 12.5px; line-height: 1.35; color: var(--muted);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.dec-disc-head b { font-family: var(--mono); color: var(--yale); }
+/* What the agent asked for, against its limit */
+.dec-ask {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 6px;
+  margin: 0 0 7px; font: 13px/1.35 var(--serif); color: var(--ink);
+}
+.dec-ask b { font-family: var(--mono); font-size: 12.5px; color: var(--yale-dark); }
+.dec-limit {
+  margin-left: auto; padding: 1px 6px; border-radius: 999px;
+  font: 700 10px/1.4 var(--mono); color: var(--yale-dark); white-space: nowrap;
+  background: rgba(242, 201, 76, 0.45); box-shadow: inset 0 0 0 1px rgba(184, 147, 47, 0.6);
+}
+/* Who asked, and the reason the shop gave when it refused the price */
+.dec-why {
+  margin: 0 0 8px; padding: 4px 7px;
+  font: italic 12px/1.4 var(--serif); color: var(--ink); overflow-wrap: anywhere;
+  background: rgba(0, 53, 107, 0.05); border-left: 3px solid var(--yale-light); border-radius: 2px;
+  overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;
+}
+.dec-why b { font-style: normal; font-weight: 700; color: var(--yale-dark); }
+.dec-prices { margin: 0 0 8px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px 12px; }
+.dec-prices > div {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 6px; min-width: 0;
+  border-bottom: 1px dotted rgba(0, 53, 107, 0.3);
+}
+.dec-prices dt {
+  font-size: 9.5px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted);
+  white-space: nowrap;
+}
+.dec-prices dd { margin: 0; font: 700 12.5px var(--mono); color: var(--yale-dark); white-space: nowrap; }
+.dec-prices .is-owner dd { color: var(--ok); }
+
+/* Price field on its own line, then "Approve down to $X" and "Decline" side by side */
+.dec-disc-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px 8px; }
+.dec-price {
+  grid-column: 1 / -1; min-width: 0; display: flex; align-items: center; gap: 2px; padding: 0 8px;
+  font: 700 14px var(--mono); color: var(--muted);
+  background: #fff; border: 1.5px solid rgba(0, 53, 107, 0.55); border-radius: 6px;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+.dec-price:focus-within { outline: 3px solid var(--sky); outline-offset: 1px; }
+.dec-price input {
+  flex: 1; min-width: 0; width: 100%; padding: 6px 0;
+  font: 700 14px var(--mono); color: var(--yale-dark);
+  background: transparent; border: 0; outline: 0;
+}
+.dec-price input:disabled { color: var(--muted); }
+.dec .dec-ok {
+  min-width: 0; padding: 6px 11px; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  box-shadow: 0 2px 0 var(--yale-dark);
+}
+.dec .dec-no {
+  padding: 6px 11px; font-size: 12px; white-space: nowrap;
+  color: var(--danger); background: #fff; box-shadow: inset 0 0 0 1.5px rgba(179, 38, 30, 0.55), 0 2px 0 rgba(179, 38, 30, 0.35);
+}
+.dec .dec-no:hover:not(:disabled) { color: #fff; background: var(--danger); }
+.dec-hint { margin: 6px 0 0; font-size: 11px; color: var(--muted); }
+.dec-hint.is-warn { font-weight: 700; color: var(--danger); }
+.dec-problem {
+  margin: 6px 0 0; padding: 4px 8px; border-radius: 3px;
+  font-size: 12px; font-weight: 700; color: var(--danger);
+  background: #fde8e6; border-left: 3px solid var(--danger);
+}
+
+/* ===== Below 1200px the page scrolls: the board shows everything, above the desk ===== */
+@media (max-width: 1199px) {
+  .dec { max-height: none; overflow: visible; }
+}
+@media (min-width: 760px) and (max-width: 1199px) {
+  .dec-group { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); align-items: start; }
+  .dec-title, .dec-head { grid-column: 1 / -1; }
+}
+
+@keyframes dec-in {
+  from { opacity: 0; translate: 0 -8px; }
+  to { opacity: 1; translate: 0 0; }
+}

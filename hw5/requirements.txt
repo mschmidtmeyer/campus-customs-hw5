@@ -1,0 +1,6 @@
+# One virtual environment for the backend and the MCP server (see README.md).
+pydantic-ai-slim[openai,mcp]==2.53.0
+fastmcp==4.1.0
+fastapi
+uvicorn[standard]
+python-dotenv

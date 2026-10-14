@@ -1,0 +1,12 @@
+.bp { margin: 0 0 10px; padding: 10px 12px; border-radius: 10px; background: #fffdf4; border: 1px solid var(--line);
+  box-shadow: var(--shadow-soft); font-size: 12.5px; max-height: 34vh; overflow-y: auto; }
+.bp-empty { color: var(--muted); font-style: italic; }
+.bp header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4px; }
+.bp header strong { font-family: var(--serif); color: var(--yale); font-size: 15px; }
+.bp header span { color: var(--muted); font-size: 11px; }
+.bp-sum { margin: 2px 0 6px; color: var(--ink); }
+.bp ol { margin: 0; padding: 0; list-style: none; counter-reset: bp; }
+.bp li { display: grid; grid-template-columns: 44px 1fr; gap: 6px; padding: 5px 0; border-top: 1px dashed var(--line); }
+.bp li div { display: flex; flex-direction: column; }
+.bp li span { color: var(--muted); }
+.bp-ticket { padding: 2px 6px; font-size: 12px; background: var(--yale); }

@@ -1,0 +1,409 @@
+/* ===== Owner's desk: nameplate, rubber stamp, hanging sign, in-tray of checks, bank counter =====
+   Desktop: fills its column; the checks scroll inside the tray and the bank counter stays in view. */
+.own {
+  position: relative;
+  display: flex; flex-direction: column; gap: 10px;
+  padding: 12px 10px 12px;
+  border-radius: var(--radius);
+  background:
+    repeating-linear-gradient(92deg, rgba(90, 50, 20, 0.1) 0 1px, transparent 1px 9px),
+    repeating-linear-gradient(88deg, rgba(255, 240, 220, 0.07) 0 3px, transparent 3px 17px),
+    linear-gradient(180deg, var(--wood-light), var(--wood));
+  box-shadow: var(--shadow), inset 0 1px 0 rgba(255, 255, 255, 0.35), inset 0 -3px 0 var(--wood-dark);
+}
+
+.own-top { flex: none; display: flex; align-items: flex-end; justify-content: space-between; gap: 10px; }
+
+/* Desk nameplate: Yale-blue plate with gold letters on a wooden wedge */
+.own-nameplate { display: inline-flex; flex-direction: column; align-items: center; }
+.own-nameplate span {
+  display: inline-block; padding: 6px 16px 7px;
+  font: 700 15px/1 var(--serif); letter-spacing: 0.05em; color: var(--gold); white-space: nowrap;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.45);
+  background: linear-gradient(180deg, var(--yale-light) 0%, var(--yale) 42%, var(--yale-dark) 100%);
+  border-radius: 3px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), inset 0 0 0 2px rgba(242, 201, 76, 0.5), 0 2px 3px rgba(0, 0, 0, 0.3);
+}
+.own-nameplate::after {
+  content: ''; width: calc(100% + 12px); height: 8px;
+  background: linear-gradient(180deg, var(--wood-dark), #5c3a22);
+  border-radius: 2px 2px 3px 3px;
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.3);
+}
+
+/* Ink pad + APPROVED rubber stamp */
+.own-props { display: flex; align-items: flex-end; gap: 8px; }
+.own-inkpad {
+  position: relative; width: 40px; height: 12px; border-radius: 3px;
+  background: linear-gradient(180deg, #0d2b52, #061a33);
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.12), 0 2px 3px rgba(0, 0, 0, 0.35);
+}
+.own-inkpad::before {
+  content: ''; position: absolute; inset: 2px 3px 4px; border-radius: 2px;
+  background: radial-gradient(ellipse at 40% 40%, #2b5f9e, var(--yale-dark));
+}
+.own-stamp { position: relative; display: flex; flex-direction: column; align-items: center; transform-origin: 50% 100%; }
+.own-stamp-knob {
+  width: 22px; height: 18px; border-radius: 50% 50% 45% 45%;
+  background: radial-gradient(circle at 35% 30%, var(--wood-light), var(--wood) 55%, var(--wood-dark));
+  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.25);
+}
+.own-stamp-neck {
+  width: 10px; height: 10px; margin-top: -2px;
+  background: linear-gradient(90deg, var(--wood-dark), var(--wood), var(--wood-dark));
+}
+.own-stamp-base {
+  padding: 3px 7px; font: 800 9px/1 var(--mono); letter-spacing: 0.12em; color: #fff;
+  background: linear-gradient(180deg, var(--yale-light), var(--yale));
+  border-radius: 3px; border-bottom: 3px solid #1b1f24;
+  box-shadow: 0 3px 4px rgba(0, 0, 0, 0.3);
+}
+.own-stamp.is-pressed { animation: own-press 0.6s ease-in-out; }
+
+/* "Waiting for you" sign hanging from a nail */
+.own-sign { flex: none; position: relative; display: flex; justify-content: center; padding-top: 18px; margin-top: -4px; }
+.own-sign::before {
+  content: ''; position: absolute; z-index: 1; top: 0; left: 50%;
+  width: 8px; height: 8px; margin-left: -4px; border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #fff, #9aa7b6 50%, #4b5868);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+}
+.own-sign-board {
+  position: relative; display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 14px;
+  font: 700 13px/1.2 var(--serif); color: var(--yale-dark);
+  background: var(--paper); border: 2px solid var(--yale); border-radius: 5px;
+  box-shadow: 0 6px 10px rgba(0, 37, 76, 0.25);
+  transform-origin: 50% -16px;
+  animation: own-swing 3.4s ease-in-out infinite;
+}
+.own-sign-board::before {
+  content: ''; position: absolute; left: 22%; right: 22%; top: -18px; height: 16px;
+  background:
+    linear-gradient(to bottom right, transparent calc(50% - 1px), #7a6448 calc(50% - 1px) calc(50% + 0.6px), transparent calc(50% + 0.6px)) left top / 50% 100% no-repeat,
+    linear-gradient(to bottom left, transparent calc(50% - 1px), #7a6448 calc(50% - 1px) calc(50% + 0.6px), transparent calc(50% + 0.6px)) right top / 50% 100% no-repeat;
+}
+.own-sign-board b {
+  min-width: 20px; padding: 1px 6px; border-radius: 999px; text-align: center;
+  font: 700 12px/1.4 var(--mono); color: #fff; background: var(--yale);
+}
+
+/* In-tray: navy tray with a gold IN tab */
+.own-tray {
+  position: relative; flex: 1; min-height: 0;
+  display: flex; flex-direction: column;
+  padding: 22px 6px 6px;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #0f3463, var(--yale-dark));
+  box-shadow:
+    inset 0 0 0 2px rgba(255, 255, 255, 0.06),
+    inset 0 4px 10px rgba(0, 0, 0, 0.45),
+    0 2px 0 rgba(255, 255, 255, 0.25),
+    0 4px 8px rgba(0, 0, 0, 0.2);
+}
+.own-tray-label {
+  position: absolute; top: 6px; left: 12px; padding: 1px 8px;
+  font: 800 10px/1.4 var(--mono); letter-spacing: 0.2em; color: var(--yale-dark);
+  background: var(--gold); border-radius: 2px; box-shadow: 0 1px 0 rgba(0, 0, 0, 0.3);
+}
+.own-tray-list {
+  flex: 1; min-height: 0; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain;
+  padding: 10px 6px 8px;
+  scrollbar-width: thin; scrollbar-color: rgba(188, 210, 238, 0.45) transparent;
+}
+.own-empty {
+  margin: 0; padding: 16px 10px; text-align: center;
+  font: italic 13px/1.4 var(--serif); color: #bcd2ee;
+  border: 1.5px dashed rgba(188, 210, 238, 0.35); border-radius: 6px;
+}
+
+/* ===== Paper check ===== */
+.check-slot {
+  display: grid; grid-template-rows: 1fr; margin-bottom: 12px;
+  transition: grid-template-rows 0.4s ease, margin-bottom 0.4s ease;
+}
+.check-slot:last-child { margin-bottom: 0; }
+.check-slot.is-leaving { grid-template-rows: 0fr; margin-bottom: 0; transition-delay: 1s; }
+
+.check {
+  position: relative; min-height: 0; min-width: 0;
+  padding: 10px 12px 8px 14px;
+  color: var(--ink);
+  background:
+    repeating-linear-gradient(45deg, rgba(0, 53, 107, 0.035) 0 2px, transparent 2px 7px),
+    repeating-linear-gradient(-45deg, rgba(0, 53, 107, 0.03) 0 2px, transparent 2px 7px),
+    linear-gradient(180deg, #f7faff, #e5eef9);
+  border-radius: 4px;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2), 0 6px 12px rgba(0, 0, 0, 0.35);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.check::before {
+  content: ''; position: absolute; left: 5px; top: 8px; bottom: 8px;
+  border-left: 1.5px dashed rgba(0, 53, 107, 0.22);
+}
+.check.is-signing { transform: translateY(-2px) rotate(-0.4deg); box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2), 0 12px 18px rgba(0, 0, 0, 0.4); }
+.check.is-failed { box-shadow: 0 0 0 2px var(--danger), 0 6px 12px rgba(0, 0, 0, 0.35); }
+.check.is-leaving { z-index: 5; animation: check-fly 0.75s cubic-bezier(0.5, -0.25, 0.75, 0.5) 0.4s forwards; }
+
+.check-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.check-bank {
+  display: inline-flex; align-items: center; gap: 6px; min-width: 0;
+  font: 700 12px/1.2 var(--serif); color: var(--yale); font-variant: small-caps; letter-spacing: 0.03em;
+}
+.check-logo {
+  display: inline-grid; place-items: center; width: 20px; height: 20px; flex: none; border-radius: 50%;
+  font: 700 9px/1 var(--serif); color: var(--gold); background: var(--yale); font-variant: normal;
+  box-shadow: inset 0 0 0 1.5px rgba(242, 201, 76, 0.6);
+}
+.check-no { font: 11px var(--mono); color: var(--muted); white-space: nowrap; }
+.check-rank {
+  position: absolute; top: -8px; left: 50%; transform: translateX(-50%);
+  padding: 2px 8px; border-radius: 3px;
+  font-size: 10px; font-weight: 800; color: var(--yale-dark); white-space: nowrap;
+  background: var(--gold); box-shadow: 0 2px 3px rgba(0, 0, 0, 0.3);
+}
+
+.check-label {
+  font-size: 9px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted);
+}
+.check-date { display: flex; justify-content: flex-end; align-items: baseline; gap: 6px; margin: 4px 0 6px; }
+.check-fill {
+  min-width: 96px; min-height: 16px; padding: 0 4px; text-align: center;
+  font: italic 13px var(--serif); color: var(--yale-dark);
+  border-bottom: 1px solid rgba(0, 53, 107, 0.4);
+}
+
+.check-payline { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: 1px 8px; }
+.check-payline .check-label { grid-column: 1 / -1; line-height: 1.15; }
+.check-payee {
+  padding: 0 4px 1px;
+  font: italic 600 16px/1.3 var(--serif); color: var(--yale-dark);
+  border-bottom: 1px solid rgba(0, 53, 107, 0.45);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.check-amount {
+  display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px;
+  font: 700 15px var(--mono); color: var(--yale-dark); white-space: nowrap;
+  background: #fff; border: 1.5px solid rgba(0, 53, 107, 0.55); border-radius: 3px;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+.check-dollar { font-weight: 600; color: var(--muted); }
+.check-words {
+  margin: 6px 0 8px; padding: 0 2px 1px;
+  font: italic 12px/1.4 var(--serif); color: var(--ink);
+  border-bottom: 1px solid rgba(0, 53, 107, 0.3);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
+.check-lower { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 12px; align-items: end; }
+.check-memo {
+  display: flex; align-items: baseline; gap: 6px; min-width: 0;
+  padding-bottom: 1px; border-bottom: 1px solid rgba(0, 53, 107, 0.3);
+}
+.check-memo-text {
+  font: italic 12px/1.3 var(--serif); color: var(--ink);
+  overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+}
+.check-sign { position: relative; display: flex; flex-direction: column; padding-top: 28px; }
+.check-sigline { display: block; height: 1px; background: rgba(0, 53, 107, 0.6); }
+.check-sign .check-label { margin-top: 2px; font-size: 8px; text-align: right; }
+.check-sig { position: absolute; left: 0; right: 0; bottom: 12px; width: 100%; height: 34px; overflow: visible; pointer-events: none; }
+.check-sig path {
+  fill: none; stroke: var(--yale-dark); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+  stroke-dasharray: 1 2; stroke-dashoffset: 1;
+  animation: check-write 0.9s cubic-bezier(0.45, 0.1, 0.4, 1) forwards;
+}
+.check-pen {
+  position: absolute; z-index: 2; left: 4%; bottom: 14px;
+  width: 46px; height: 7px; border-radius: 1px 4px 4px 1px;
+  background: linear-gradient(90deg, var(--gold) 0 7px, var(--yale-dark) 7px 30px, var(--gold) 30px 32px, var(--yale) 32px);
+  box-shadow: 2px 3px 4px rgba(0, 0, 0, 0.25);
+  transform-origin: 0 50%; transform: rotate(-32deg);
+  pointer-events: none;
+  animation: check-pen 0.9s cubic-bezier(0.45, 0.1, 0.4, 1) forwards;
+}
+.check-pen::before {
+  content: ''; position: absolute; left: -6px; top: 1px;
+  border-style: solid; border-width: 2.5px 6px 2.5px 0;
+  border-color: transparent var(--gold) transparent transparent;
+}
+
+.check-meta { margin: 8px 0 0; font: 11px/1.4 var(--mono); color: var(--muted); }
+.check-warn {
+  margin: 6px 0 0; padding: 4px 8px; border-radius: 3px;
+  font-size: 11px; font-weight: 600; color: #7a4a00;
+  background: #fff4d6; border-left: 3px solid var(--warn);
+}
+.check-error {
+  margin: 6px 0 0; padding: 4px 8px; border-radius: 3px;
+  font-size: 12px; font-weight: 700; color: var(--danger);
+  background: #fde8e6; border-left: 3px solid var(--danger);
+  animation: check-shake 0.4s ease-in-out;
+}
+.check-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px; }
+.check .check-btn { padding: 6px 14px; font-size: 12px; box-shadow: 0 2px 0 var(--yale-dark); }
+.check .check-dismiss { padding: 6px 10px; font-size: 12px; color: var(--muted); background: transparent; box-shadow: inset 0 0 0 1px var(--line); }
+.check .check-dismiss:hover:not(:disabled) { color: var(--ink); background: var(--wash); }
+.check-micr {
+  margin-top: 6px; font: 11px var(--mono); letter-spacing: 0.18em; color: rgba(16, 35, 63, 0.4);
+  white-space: nowrap; overflow: hidden;
+}
+
+.check-paid {
+  position: absolute; left: 50%; top: 42%; z-index: 3;
+  padding: 2px 14px;
+  font: 900 30px/1 Impact, "Arial Black", "Helvetica Neue", Arial, sans-serif; letter-spacing: 0.12em;
+  color: var(--yale); border: 4px double var(--yale); border-radius: 6px;
+  opacity: 0.85; mix-blend-mode: multiply; pointer-events: none;
+  transform: translate(-50%, -50%) rotate(-10deg);
+  animation: check-stamp 0.35s cubic-bezier(0.3, 0.7, 0.4, 1) both;
+}
+
+/* ===== Bank counter (and the cash plan under it, cashplan.css) =====
+   On desktop the wrapper steps aside, so the bank and the plan are rows of the desk like the tray. */
+.own-money { display: contents; }
+.bank {
+  position: relative; flex: none; padding: 12px 12px 12px; border-radius: 10px;
+  background: linear-gradient(180deg, #f4f8fd, #e2ebf6);
+  border: 1px solid var(--line);
+  box-shadow: inset 0 1px 0 #fff, 0 3px 0 rgba(0, 37, 76, 0.12), 0 6px 14px rgba(0, 37, 76, 0.18);
+}
+.bank::before {
+  content: ''; position: absolute; left: 10px; right: 10px; top: -4px; height: 4px;
+  border-radius: 3px 3px 0 0; background: linear-gradient(90deg, #b8932f, var(--gold), #b8932f);
+}
+.bank-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
+.bank-label { font-size: 11px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: var(--yale); }
+.bank-account { min-width: 0; font-size: 11px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bank-window { position: relative; display: flex; align-items: center; flex-wrap: wrap; gap: 6px 10px; font-size: 22px; }
+.bank-flash {
+  position: absolute; inset: -4px -6px; border-radius: 8px; pointer-events: none;
+  background: rgba(179, 38, 30, 0.32);
+  animation: bank-flash 0.9s ease-out forwards;
+}
+.bank-drop { font: 700 13px var(--mono); color: var(--danger); white-space: nowrap; animation: bank-drop 2.6s ease-out forwards; }
+
+.bank-bar {
+  display: flex; height: 10px; margin: 12px 0 6px; overflow: hidden;
+  border-radius: 999px; background: rgba(0, 53, 107, 0.1);
+  box-shadow: inset 0 1px 2px rgba(0, 37, 76, 0.2);
+}
+.bank-bar-used {
+  background: repeating-linear-gradient(-45deg, var(--gold) 0 6px, #e0b43a 6px 12px);
+  transition: width 0.9s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.bank-bar-free {
+  background: linear-gradient(90deg, var(--yale-light), var(--yale));
+  transition: width 0.9s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.bank-bar.is-short .bank-bar-used { background: repeating-linear-gradient(-45deg, var(--danger) 0 6px, #d0473e 6px 12px); }
+.bank-legend { margin: 0; display: flex; flex-wrap: wrap; gap: 2px 6px; font-size: 11px; line-height: 1.5; color: var(--muted); }
+.bank-legend b { font-family: var(--mono); color: var(--ink); }
+.bank-legend b.is-short { color: var(--danger); }
+.bank-key { display: inline-block; width: 8px; height: 8px; margin-right: 4px; border-radius: 2px; vertical-align: -1px; }
+.bank-key-used { background: var(--gold); }
+.bank-key-free { background: var(--yale); }
+
+/* ===== Odometer (Odometer.tsx) ===== */
+.odo { position: relative; display: inline-flex; align-items: center; font-family: var(--mono); font-weight: 700; line-height: 1; }
+.odo-empty { color: var(--muted); }
+.odo-reel {
+  display: inline-flex; align-items: center; gap: 2px; padding: 4px 5px;
+  background: #0a1a30; border-radius: 6px;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.6), 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+.odo-digit {
+  --odo-h: 1.3em;
+  position: relative; display: inline-block; width: 0.8em; height: var(--odo-h); overflow: hidden;
+  border-radius: 3px; color: #fff; text-align: center;
+  background: linear-gradient(180deg, var(--yale-dark), var(--yale) 50%, var(--yale-dark));
+}
+.odo-digit.is-cents { background: linear-gradient(180deg, #1d4f8c, var(--yale-light) 50%, #1d4f8c); }
+.odo-digit::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.45), transparent 32%, transparent 68%, rgba(0, 0, 0, 0.45));
+}
+.odo-strip {
+  display: flex; flex-direction: column;
+  transition: transform 0.9s cubic-bezier(0.22, 0.9, 0.25, 1);
+  will-change: transform;
+}
+.odo-strip > span { display: block; height: var(--odo-h); line-height: var(--odo-h); font-variant-numeric: tabular-nums; }
+.odo-sep { padding: 0 1px; color: #cfe0f5; }
+.odo-sr {
+  position: absolute; width: 1px; height: 1px; overflow: hidden;
+  clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap;
+}
+
+/* ===== Below 1200px the desk sits in the page: tray and bank side by side, then stacked ===== */
+@media (max-width: 1199px) {
+  .own {
+    display: grid; grid-template-columns: minmax(0, 1fr) minmax(260px, 340px); align-items: start;
+    grid-template-areas: "top top" "sign sign" "tray bank";
+  }
+  .own-top { grid-area: top; }
+  .own-sign { grid-area: sign; }
+  .own-tray { grid-area: tray; }
+  .own-money { grid-area: bank; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+  .own-tray-list { overflow: visible; }
+}
+@media (max-width: 759px) {
+  .own { grid-template-columns: minmax(0, 1fr); grid-template-areas: "top" "sign" "tray" "bank"; }
+}
+/* On desktop the tray scrolls and clips its edges, so a paid check fades out inside it; the plane carries it off */
+@media (min-width: 1200px) {
+  .check.is-leaving { animation-name: check-fly-tray; }
+}
+
+/* ===== Keyframes ===== */
+@keyframes own-press {
+  0% { transform: none; }
+  35% { transform: translateY(5px) scaleY(0.92); }
+  60% { transform: translateY(-3px); }
+  100% { transform: none; }
+}
+@keyframes own-swing {
+  0%, 100% { transform: rotate(-2.5deg); }
+  50% { transform: rotate(2.5deg); }
+}
+@keyframes check-write { to { stroke-dashoffset: 0; } }
+@keyframes check-pen {
+  0% { left: 4%; bottom: 14px; opacity: 1; }
+  20% { bottom: 8px; }
+  35% { bottom: 18px; }
+  50% { bottom: 9px; }
+  65% { bottom: 17px; }
+  85% { left: 84%; bottom: 10px; opacity: 1; }
+  100% { left: 92%; bottom: 22px; opacity: 0; }
+}
+@keyframes check-stamp {
+  0% { opacity: 0; transform: translate(-50%, -50%) rotate(-10deg) scale(2); }
+  100% { opacity: 0.85; transform: translate(-50%, -50%) rotate(-10deg) scale(1); }
+}
+@keyframes check-fly {
+  0% { transform: none; opacity: 1; }
+  18% { transform: translate(-6px, 4px) rotate(-1.5deg); opacity: 1; }
+  100% { transform: translate(120%, -70%) rotate(14deg) scale(0.9); opacity: 0; }
+}
+@keyframes check-fly-tray {
+  0% { transform: none; opacity: 1; }
+  18% { transform: translate(-4px, 3px) rotate(-1deg); opacity: 1; }
+  100% { transform: rotate(-5deg) scale(0.82); opacity: 0; }
+}
+@keyframes check-shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  50% { transform: translateX(3px); }
+  75% { transform: translateX(-2px); }
+}
+@keyframes bank-flash {
+  0% { opacity: 0; }
+  15% { opacity: 1; }
+  100% { opacity: 0; }
+}
+@keyframes bank-drop {
+  0% { opacity: 0; transform: translateY(-6px); }
+  12% { opacity: 1; transform: translateY(0); }
+  75% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(4px); }
+}
