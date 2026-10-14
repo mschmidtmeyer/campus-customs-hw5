@@ -320,3 +320,7 @@ What was lacking: the first prompt did not ask to check that a grader's fresh cl
 ### Follow-up prompt 4
 
 > Is the GitHub repo ready?
+
+### Follow-up prompt 5
+
+> yes
